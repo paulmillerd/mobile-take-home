@@ -1,8 +1,9 @@
 package com.paulmillerd.rickandmorty.di.module;
 
 import com.apollographql.apollo.ApolloClient;
+import com.paulmillerd.rickandmorty.rickAndMortyApi.IRickAndMortyService;
+import com.paulmillerd.rickandmorty.rickAndMortyApi.RickAndMortyService;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -14,25 +15,21 @@ import okhttp3.logging.HttpLoggingInterceptor;
 public class RickAndMortyApiModule {
 
     private static final String BASE_URL = "https://rickandmortyapi.com/graphql";
-    public static final String RICK_AND_MORTY_CLIENT_NAME = "rickAndMortyClient";
 
     @Provides
     @Singleton
-    public OkHttpClient providesOkHttpClient() {
-        return new OkHttpClient.Builder()
+    public IRickAndMortyService providesRickAndMortyService() {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor()
                         .setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build();
-    }
 
-    @Provides
-    @Singleton
-    @Named(RICK_AND_MORTY_CLIENT_NAME)
-    public ApolloClient providesRickAndMortyClient(OkHttpClient okHttpClient) {
-        return ApolloClient.builder()
+        ApolloClient apolloClient = ApolloClient.builder()
                 .okHttpClient(okHttpClient)
                 .serverUrl(BASE_URL)
                 .build();
+
+        return new RickAndMortyService(apolloClient);
     }
 
 }
