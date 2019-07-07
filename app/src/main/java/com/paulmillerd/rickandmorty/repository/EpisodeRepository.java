@@ -5,8 +5,6 @@ import com.paulmillerd.rickandmorty.rickAndMortyApi.IRickAndMortyService;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -19,8 +17,7 @@ public class EpisodeRepository implements IEpisodeRepository {
 
     private IRickAndMortyService mRickAndMortyService;
 
-    @Inject
-    EpisodeRepository(IRickAndMortyService rickAndMortyService) {
+    public EpisodeRepository(IRickAndMortyService rickAndMortyService) {
         mRickAndMortyService = rickAndMortyService;
     }
 
@@ -58,9 +55,9 @@ public class EpisodeRepository implements IEpisodeRepository {
     private void fetchPage(int page, @Nullable PageKeyedDataSource.LoadInitialCallback<Integer, Episode> initialCallback, @Nullable PageKeyedDataSource.LoadCallback<Integer, Episode> callback) {
         mRickAndMortyService.getEpisodesPage(page, new IRickAndMortyService.EpisodePageCallback() {
             @Override
-            public void onPageLoaded(List<Episode> episodeList, int totalPageCount) {
+            public void onPageLoaded(List<Episode> episodeList, int totalEpisodeCount) {
                 if (initialCallback != null) {
-                    initialCallback.onResult(episodeList, 0, totalPageCount, null, page + 1);
+                    initialCallback.onResult(episodeList, 0, totalEpisodeCount, null, page + 1);
                 } else if (callback != null) {
                     callback.onResult(episodeList, page + 1);
                 }

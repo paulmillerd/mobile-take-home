@@ -8,7 +8,7 @@ public interface IRickAndMortyService {
     public void getEpisodesPage(int page, EpisodePageCallback callback);
 
     public interface EpisodePageCallback {
-        public void onPageLoaded(List<Episode> episodeList, int totalPageCount);
+        public void onPageLoaded(List<Episode> episodeList, int totalEpisodeCount);
 
         public void onFailure();
     }

@@ -32,18 +32,18 @@ public class RickAndMortyService implements IRickAndMortyService {
                     @Override
                     public void onResponse(@NotNull Response<EpisodesQuery.Data> response) {
                         List<Episode> episodeList;
-                        int totalPageCount;
+                        int totalEpisodeCount;
 
                         try {
                             EpisodesQuery.Episodes episodes = response.data().episodes();
                             episodeList = buildEpisodeList(episodes.results());
-                            totalPageCount = episodes.info().pages();
+                            totalEpisodeCount = episodes.info().count();
                         } catch (NullPointerException e) {
                             callback.onFailure();
                             return;
                         }
 
-                        callback.onPageLoaded(episodeList, totalPageCount);
+                        callback.onPageLoaded(episodeList, totalEpisodeCount);
                     }
 
                     @Override
