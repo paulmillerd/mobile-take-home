@@ -1,11 +1,14 @@
 package com.paulmillerd.rickandmorty.di.module;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.paulmillerd.rickandmorty.killing.CharacterKiller;
+import com.paulmillerd.rickandmorty.killing.ICharacterKiller;
 import com.paulmillerd.rickandmorty.repository.CharacterDetailRepository;
 import com.paulmillerd.rickandmorty.repository.EpisodeRepository;
 import com.paulmillerd.rickandmorty.repository.ICharacterDetailRepository;
@@ -58,6 +61,13 @@ public class AppModule {
             }
 
         });
+    }
+
+    @Provides
+    @Singleton
+    ICharacterKiller providesCharacterKiller() {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+        return new CharacterKiller(sharedPreferences);
     }
 
 }

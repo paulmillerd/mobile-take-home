@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.paulmillerd.rickandmorty.R;
 import com.paulmillerd.rickandmorty.RickAndMortyApp;
+import com.paulmillerd.rickandmorty.killing.ICharacterKiller;
 import com.paulmillerd.rickandmorty.model.ICharacter;
 import com.paulmillerd.rickandmorty.model.IEpisode;
 import com.paulmillerd.rickandmorty.repository.ICharacterDetailRepository;
@@ -32,6 +33,8 @@ public class EpisodeDetailFragment extends Fragment implements OnCharacterClicke
     ICharacterDetailRepository mCharacterDetailRepository;
     @Inject
     ImageLoader mImageLoader;
+    @Inject
+    ICharacterKiller mCharacterKiller;
     private TextView mEpisodeNameTextView, mEpisodeEpisodeTextView, mEpisodeAirDateTextView;
     private RecyclerView mCharactersRecyclerView;
     private IEpisodeDetailViewModel mViewModel;
@@ -82,7 +85,8 @@ public class EpisodeDetailFragment extends Fragment implements OnCharacterClicke
                 getActivity().onBackPressed();
             });
 
-            mCharacterListAdapter = new CharacterListAdapter(mImageLoader, this);
+            mCharacterListAdapter = new CharacterListAdapter(mImageLoader, this,
+                    mCharacterKiller);
             mCharactersRecyclerView.setAdapter(mCharacterListAdapter);
 
             mViewModel = ViewModelProviders.of(this).get(EpisodeDetailViewModel.class);

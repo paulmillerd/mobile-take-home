@@ -10,6 +10,8 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.paulmillerd.rickandmorty.R;
 import com.paulmillerd.rickandmorty.RickAndMortyApp;
+import com.paulmillerd.rickandmorty.killing.CharacterKiller;
+import com.paulmillerd.rickandmorty.killing.ICharacterKiller;
 import com.paulmillerd.rickandmorty.model.ICharacter;
 
 import javax.inject.Inject;
@@ -25,6 +27,8 @@ public class CharacterDetailFragment extends Fragment {
 
     @Inject
     ImageLoader mImageLoader;
+    @Inject
+    ICharacterKiller mCharacterKiller;
 
     private NetworkImageView mNetworkImageView;
     private TextView mCharacterNameView, mCharacterStatusView, mCharacterSpeciesView, mCharacterLocationView, mCharacterOriginView;
@@ -69,9 +73,17 @@ public class CharacterDetailFragment extends Fragment {
                 if (character != null) {
                     mNetworkImageView.setImageUrl(character.getImage(), mImageLoader);
                     mCharacterNameView.setText(character.getName());
+
+                    String status;
+                    if (mCharacterKiller.wasCharacterKilled(character)) {
+                        status = CharacterKiller.DEAD;
+                    } else {
+                        status = character.getStatus();
+                    }
+
                     mCharacterStatusView.setText(String.format(
                             getActivity().getString(R.string.status),
-                            character.getStatus()
+                            status
                     ));
                     mCharacterSpeciesView.setText(String.format(
                             getActivity().getString(R.string.species),

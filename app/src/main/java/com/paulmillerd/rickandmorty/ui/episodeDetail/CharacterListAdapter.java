@@ -3,6 +3,7 @@ package com.paulmillerd.rickandmorty.ui.episodeDetail;
 import android.view.ViewGroup;
 
 import com.android.volley.toolbox.ImageLoader;
+import com.paulmillerd.rickandmorty.killing.ICharacterKiller;
 import com.paulmillerd.rickandmorty.model.ICharacter;
 
 import androidx.annotation.NonNull;
@@ -13,17 +14,20 @@ public class CharacterListAdapter extends ListAdapter<ICharacter, CharacterListV
 
     private ImageLoader mImageLoader;
     private OnCharacterClickedListener mOnCharacterClickedListener;
+    private ICharacterKiller mCharacterKiller;
 
-    CharacterListAdapter(ImageLoader imageLoader, OnCharacterClickedListener onCharacterClickedListener) {
+    CharacterListAdapter(ImageLoader imageLoader, OnCharacterClickedListener onCharacterClickedListener,
+                         ICharacterKiller characterKiller) {
         super(new CharacterDiffer());
         mImageLoader = imageLoader;
         mOnCharacterClickedListener = onCharacterClickedListener;
+        mCharacterKiller = characterKiller;
     }
 
     @NonNull
     @Override
     public CharacterListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return CharacterListViewHolder.create(parent, mImageLoader, mOnCharacterClickedListener);
+        return CharacterListViewHolder.create(parent, mImageLoader, mOnCharacterClickedListener, mCharacterKiller);
     }
 
     @Override

@@ -9,4 +9,5 @@
     <string name="species">Species: %s</string>
     <string name="location">Location: %s</string>
     <string name="origin">Origin: %s</string>
+    <string name="kill">Kill</string>
 </resources>
