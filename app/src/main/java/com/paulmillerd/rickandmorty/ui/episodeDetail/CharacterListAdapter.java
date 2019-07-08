@@ -12,16 +12,18 @@ import androidx.recyclerview.widget.ListAdapter;
 public class CharacterListAdapter extends ListAdapter<ICharacter, CharacterListViewHolder> {
 
     private ImageLoader mImageLoader;
+    private OnCharacterClickedListener mOnCharacterClickedListener;
 
-    CharacterListAdapter(ImageLoader imageLoader) {
+    CharacterListAdapter(ImageLoader imageLoader, OnCharacterClickedListener onCharacterClickedListener) {
         super(new CharacterDiffer());
         mImageLoader = imageLoader;
+        mOnCharacterClickedListener = onCharacterClickedListener;
     }
 
     @NonNull
     @Override
     public CharacterListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return CharacterListViewHolder.create(parent, mImageLoader);
+        return CharacterListViewHolder.create(parent, mImageLoader, mOnCharacterClickedListener);
     }
 
     @Override

@@ -4,4 +4,9 @@
     <string name="air_date">Air date: %s</string>
     <string name="rick_and_morty_episodes">Rick and Morty Episodes</string>
     <string name="episode_detail">Episode Detail</string>
+    <string name="character_detail">Character Detail</string>
+    <string name="status">Status: %s</string>
+    <string name="species">Species: %s</string>
+    <string name="location">Location: %s</string>
+    <string name="origin">Origin: %s</string>
 </resources>

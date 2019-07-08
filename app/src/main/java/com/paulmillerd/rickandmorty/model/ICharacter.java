@@ -1,6 +1,8 @@
 package com.paulmillerd.rickandmorty.model;
 
-public interface ICharacter {
+import java.io.Serializable;
+
+public interface ICharacter extends Serializable {
     int getId();
 
     String getName();

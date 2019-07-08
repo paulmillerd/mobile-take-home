@@ -9,8 +9,10 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.paulmillerd.rickandmorty.R;
 import com.paulmillerd.rickandmorty.RickAndMortyApp;
+import com.paulmillerd.rickandmorty.model.ICharacter;
 import com.paulmillerd.rickandmorty.model.IEpisode;
 import com.paulmillerd.rickandmorty.repository.ICharacterDetailRepository;
+import com.paulmillerd.rickandmorty.ui.CharacterDisplayer;
 
 import javax.inject.Inject;
 
@@ -23,7 +25,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class EpisodeDetailFragment extends Fragment {
+public class EpisodeDetailFragment extends Fragment implements OnCharacterClickedListener {
 
     private final static String EPISODE = "EPISODE";
     @Inject
@@ -33,8 +35,9 @@ public class EpisodeDetailFragment extends Fragment {
     private TextView mEpisodeNameTextView, mEpisodeEpisodeTextView, mEpisodeAirDateTextView;
     private RecyclerView mCharactersRecyclerView;
     private IEpisodeDetailViewModel mViewModel;
-    private CharacterListAdapter mCharacterListAdapter = new CharacterListAdapter(mImageLoader);
+    private CharacterListAdapter mCharacterListAdapter;
     private Toolbar mToolbar;
+    private CharacterDisplayer mCharacterDisplayer;
 
     public static EpisodeDetailFragment newInstance(IEpisode episode) {
         Bundle args = new Bundle();
@@ -43,6 +46,10 @@ public class EpisodeDetailFragment extends Fragment {
         EpisodeDetailFragment fragment = new EpisodeDetailFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setCharacterDisplayer(CharacterDisplayer characterDisplayer) {
+        mCharacterDisplayer = characterDisplayer;
     }
 
     @Nullable
@@ -75,7 +82,7 @@ public class EpisodeDetailFragment extends Fragment {
                 getActivity().onBackPressed();
             });
 
-            mCharacterListAdapter = new CharacterListAdapter(mImageLoader);
+            mCharacterListAdapter = new CharacterListAdapter(mImageLoader, this);
             mCharactersRecyclerView.setAdapter(mCharacterListAdapter);
 
             mViewModel = ViewModelProviders.of(this).get(EpisodeDetailViewModel.class);
@@ -99,4 +106,10 @@ public class EpisodeDetailFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onCharacterClicked(ICharacter character) {
+        if (mCharacterDisplayer != null) {
+            mCharacterDisplayer.displayCharacter(character);
+        }
+    }
 }
