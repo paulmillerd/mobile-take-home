@@ -1,14 +1,15 @@
 package com.paulmillerd.rickandmorty.ui.episodes;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.paulmillerd.rickandmorty.R;
 import com.paulmillerd.rickandmorty.RickAndMortyApp;
+import com.paulmillerd.rickandmorty.model.IEpisode;
 import com.paulmillerd.rickandmorty.repository.IEpisodeRepository;
+import com.paulmillerd.rickandmorty.ui.EpisodeDisplayer;
 
 import javax.inject.Inject;
 
@@ -16,28 +17,30 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
-public class EpisodesFragment extends Fragment {
+public class EpisodesFragment extends Fragment implements OnEpisodeClickedListener {
 
     @Inject
     IEpisodeRepository mEpisodeRepository;
 
-    @BindView(R.id.episodes_recycler_view)
-    RecyclerView mRecyclerView;
-
-    private IEpisodesViewModel mViewModel;
+    private RecyclerView mRecyclerView;
     private EpisodesAdapter mEpisodesAdapter;
+    private EpisodeDisplayer mEpisodeDisplayer;
+
+    public void setEpisodeDisplayer(EpisodeDisplayer episodeDisplayer) {
+        mEpisodeDisplayer = episodeDisplayer;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.episodes_fragment_layout, container, false);
-        ButterKnife.bind(this, view);
+        mRecyclerView = view.findViewById(R.id.episodes_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
         return view;
     }
 
@@ -47,17 +50,21 @@ public class EpisodesFragment extends Fragment {
         if (getActivity() != null) {
             RickAndMortyApp.getAppComponent(getActivity()).inject(this);
 
-            mViewModel = ViewModelProviders.of(this).get(EpisodesViewModel.class);
-            mViewModel.initialize(mEpisodeRepository);
+            IEpisodesViewModel viewModel = ViewModelProviders.of(this).get(EpisodesViewModel.class);
+            viewModel.initialize(mEpisodeRepository);
 
-            mEpisodesAdapter = new EpisodesAdapter(mViewModel);
+            mEpisodesAdapter = new EpisodesAdapter(this);
             mRecyclerView.setAdapter(mEpisodesAdapter);
 
-            mViewModel.getAllEpisodes().observe(this,
+            viewModel.getAllEpisodes().observe(this,
                     episodes -> mEpisodesAdapter.submitList(episodes));
+        }
+    }
 
-            mViewModel.getClickedEpisode().observe(this,
-                    clickedEpisode -> Log.d("EpisodeClickLogs", "clicked on: " + clickedEpisode.getName()));
+    @Override
+    public void onEpisodeClicked(IEpisode episode) {
+        if (mEpisodeDisplayer != null) {
+            mEpisodeDisplayer.displayEpisode(episode);
         }
     }
 

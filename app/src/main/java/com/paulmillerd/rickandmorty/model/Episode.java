@@ -1,17 +1,22 @@
 package com.paulmillerd.rickandmorty.model;
 
-public class Episode {
+import java.util.List;
 
-    private String mId, mName, mAirDate, mEpisode;
+public class Episode implements IEpisode {
 
-    public Episode(String id, String name, String airDate, String episode) {
+    private int mId;
+    private String mName, mAirDate, mEpisode;
+    private List<Integer> mCharacterIds;
+
+    public Episode(int id, String name, String airDate, String episode, List<Integer> characterIds) {
         mId = id;
         mName = name;
         mAirDate = airDate;
         mEpisode = episode;
+        mCharacterIds = characterIds;
     }
 
-    public String getId() {
+    public int getId() {
         return mId;
     }
 
@@ -25,5 +30,10 @@ public class Episode {
 
     public String getEpisode() {
         return mEpisode;
+    }
+
+    @Override
+    public List<Integer> getCharacterIds() {
+        return mCharacterIds;
     }
 }

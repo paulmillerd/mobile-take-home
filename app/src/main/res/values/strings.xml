@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Rick and Morty</string>
+    <string name="characters">Characters:</string>
+    <string name="air_date">Air date: %s</string>
+    <string name="rick_and_morty_episodes">Rick and Morty Episodes</string>
+    <string name="episode_detail">Episode Detail</string>
 </resources>

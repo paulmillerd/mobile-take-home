@@ -1,68 +1,121 @@
 package com.paulmillerd.rickandmorty.rickAndMortyApi;
 
-import com.apollographql.apollo.ApolloCall;
-import com.apollographql.apollo.ApolloClient;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
-import com.paulmillerd.rickandmorty.EpisodesQuery;
-import com.paulmillerd.rickandmorty.model.Episode;
+import android.content.Context;
 
-import org.jetbrains.annotations.NotNull;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.paulmillerd.rickandmorty.model.Character;
+import com.paulmillerd.rickandmorty.model.Episode;
+import com.paulmillerd.rickandmorty.model.ICharacter;
+import com.paulmillerd.rickandmorty.model.IEpisode;
+import com.paulmillerd.rickandmorty.rickAndMortyApi.responseModels.characterDetail.CharacterDetailResponse;
+import com.paulmillerd.rickandmorty.rickAndMortyApi.responseModels.episodeList.Response;
+import com.paulmillerd.rickandmorty.rickAndMortyApi.responseModels.episodeList.ResultsItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import static com.android.volley.Request.Method.GET;
+
 public class RickAndMortyService implements IRickAndMortyService {
 
-    private ApolloClient mApolloClient;
+    private static final String BASE_URL = "https://rickandmortyapi.com/api";
+
+    private RequestQueue mRequestQueue;
+    private Gson mGson = new Gson();
 
     @Inject
-    public RickAndMortyService(ApolloClient apolloClient) {
-        mApolloClient = apolloClient;
+    public RickAndMortyService(Context context) {
+        mRequestQueue = Volley.newRequestQueue(context);
     }
 
     @Override
     public void getEpisodesPage(int page, EpisodePageCallback callback) {
-        mApolloClient.query(EpisodesQuery.builder()
-                .page(page)
-                .build())
-                .enqueue(new ApolloCall.Callback<EpisodesQuery.Data>() {
-                    @Override
-                    public void onResponse(@NotNull Response<EpisodesQuery.Data> response) {
-                        List<Episode> episodeList;
-                        int totalEpisodeCount;
-
-                        try {
-                            EpisodesQuery.Episodes episodes = response.data().episodes();
-                            episodeList = buildEpisodeList(episodes.results());
-                            totalEpisodeCount = episodes.info().count();
-                        } catch (NullPointerException e) {
-                            callback.onFailure();
-                            return;
-                        }
-
-                        callback.onPageLoaded(episodeList, totalEpisodeCount);
-                    }
-
-                    @Override
-                    public void onFailure(@NotNull ApolloException e) {
-                        callback.onFailure();
-                    }
+        JsonObjectRequest request = new JsonObjectRequest(GET, BASE_URL + "/episode/?page=" + page, null,
+                response -> {
+                    Response episodeListResponse = mGson.fromJson(response.toString(), Response.class);
+                    List<IEpisode> episodeList = buildEpisodeList(episodeListResponse.getResults());
+                    int totalEpisodeCount = episodeListResponse.getInfo().getCount();
+                    callback.onPageLoaded(episodeList, totalEpisodeCount);
+                },
+                error -> {
+                    callback.onFailure();
                 });
+        mRequestQueue.add(request);
     }
 
-    private List<Episode> buildEpisodeList(List<EpisodesQuery.Result> results) {
-        ArrayList<Episode> episodeList = new ArrayList<>();
-        for (EpisodesQuery.Result result : results) {
+    @Override
+    public void getEpisodeDetail(int id, EpisodeDetailCallback callback) {
+        JsonObjectRequest request = new JsonObjectRequest(GET, BASE_URL + "/episode/" + id, null,
+                response -> {
+                    ResultsItem episodeDetailResponse = mGson.fromJson(response.toString(), ResultsItem.class);
+                    IEpisode episode = resultToEpisode(episodeDetailResponse);
+                    callback.onDetailLoaded(episode);
+                },
+                error -> {
+                    callback.onFailure();
+                });
+        mRequestQueue.add(request);
+    }
+
+    @Override
+    public void getCharacterDetail(String url, CharacterDetailCallback callback) {
+        JsonObjectRequest request = new JsonObjectRequest(GET, url, null,
+                response -> {
+                    CharacterDetailResponse characterDetailResponse = mGson.fromJson(response.toString(), CharacterDetailResponse.class);
+                    ICharacter character = characterFromResponse(characterDetailResponse);
+                    callback.onDetailLoaded(character);
+                },
+                error -> {
+                    callback.onFailure();
+                });
+        mRequestQueue.add(request);
+    }
+
+    @Override
+    public void getCharacterDetail(int id, CharacterDetailCallback callback) {
+        getCharacterDetail(BASE_URL + "/character/" + id, callback);
+    }
+
+    private List<IEpisode> buildEpisodeList(List<ResultsItem> results) {
+        ArrayList<IEpisode> episodeList = new ArrayList<>();
+        for (ResultsItem result : results) {
             episodeList.add(resultToEpisode(result));
         }
         return episodeList;
     }
 
-    private Episode resultToEpisode(EpisodesQuery.Result result) {
-        return new Episode(result.id(), result.name(), result.air_date(), result.episode());
+    private IEpisode resultToEpisode(ResultsItem result) {
+        ArrayList<Integer> characterIds = new ArrayList<>();
+
+        for (String characterUrl : result.getCharacters()) {
+            int indexOfLastSlash = characterUrl.lastIndexOf('/');
+            try {
+                Integer characterId = Integer.parseInt(characterUrl.substring(indexOfLastSlash + 1));
+                characterIds.add(characterId);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new Episode(result.getId(), result.getName(), result.getAirDate(),
+                result.getEpisode(), characterIds);
+    }
+
+    private ICharacter characterFromResponse(CharacterDetailResponse response) {
+        return new Character(
+                response.getId(),
+                response.getName(),
+                response.getImage(),
+                response.getStatus(),
+                response.getSpecies(),
+                response.getLocation().getName(),
+                response.getOrigin().getName()
+        );
     }
 
 }

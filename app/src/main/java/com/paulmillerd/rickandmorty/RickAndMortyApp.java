@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.paulmillerd.rickandmorty.di.AppComponent;
 import com.paulmillerd.rickandmorty.di.DaggerAppComponent;
+import com.paulmillerd.rickandmorty.di.module.AppModule;
 import com.paulmillerd.rickandmorty.di.module.RickAndMortyApiModule;
 
 public class RickAndMortyApp extends Application {
@@ -19,7 +20,8 @@ public class RickAndMortyApp extends Application {
     public void onCreate() {
         super.onCreate();
         mAppComponent = DaggerAppComponent.builder()
-                .rickAndMortyApiModule(new RickAndMortyApiModule())
+                .rickAndMortyApiModule(new RickAndMortyApiModule(this))
+                .appModule(new AppModule(this))
                 .build();
     }
 

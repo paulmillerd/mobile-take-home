@@ -2,13 +2,13 @@ package com.paulmillerd.rickandmorty.ui.episodes;
 
 import android.view.ViewGroup;
 
-import com.paulmillerd.rickandmorty.model.Episode;
+import com.paulmillerd.rickandmorty.model.IEpisode;
 
 import androidx.annotation.NonNull;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 
-public class EpisodesAdapter extends PagedListAdapter<Episode, EpisodesViewHolder> {
+public class EpisodesAdapter extends PagedListAdapter<IEpisode, EpisodesViewHolder> {
 
     private OnEpisodeClickedListener mOnEpisodeClickedListener;
 
@@ -28,15 +28,15 @@ public class EpisodesAdapter extends PagedListAdapter<Episode, EpisodesViewHolde
         holder.bindItem(getItem(position));
     }
 
-    private static class EpisodesDiffer extends DiffUtil.ItemCallback<Episode> {
+    private static class EpisodesDiffer extends DiffUtil.ItemCallback<IEpisode> {
 
         @Override
-        public boolean areItemsTheSame(@NonNull Episode oldItem, @NonNull Episode newItem) {
-            return oldItem.getId().equals(newItem.getId());
+        public boolean areItemsTheSame(@NonNull IEpisode oldItem, @NonNull IEpisode newItem) {
+            return oldItem.getId() == newItem.getId();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Episode oldItem, @NonNull Episode newItem) {
+        public boolean areContentsTheSame(@NonNull IEpisode oldItem, @NonNull IEpisode newItem) {
             return oldItem.getAirDate().equals(newItem.getAirDate())
                     && oldItem.getName().equals(newItem.getName())
                     && oldItem.getEpisode().equals(newItem.getEpisode());

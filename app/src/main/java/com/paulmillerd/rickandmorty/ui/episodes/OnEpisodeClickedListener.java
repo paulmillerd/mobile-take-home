@@ -1,7 +1,7 @@
 package com.paulmillerd.rickandmorty.ui.episodes;
 
-import com.paulmillerd.rickandmorty.model.Episode;
+import com.paulmillerd.rickandmorty.model.IEpisode;
 
 public interface OnEpisodeClickedListener {
-    public void onEpisodeClicked(Episode episode);
+    void onEpisodeClicked(IEpisode episode);
 }

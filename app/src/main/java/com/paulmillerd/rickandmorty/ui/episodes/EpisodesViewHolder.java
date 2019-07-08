@@ -6,44 +6,38 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.paulmillerd.rickandmorty.R;
-import com.paulmillerd.rickandmorty.model.Episode;
+import com.paulmillerd.rickandmorty.model.IEpisode;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class EpisodesViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.episode_name_text_view)
-    TextView episodeNameTextView;
-
-    @BindView(R.id.episode_air_date_text_view)
-    TextView episodeAirDateTextView;
-
-    @BindView(R.id.episode_episode_text_view)
-    TextView episodeEpisodeTextView;
-
+    private TextView mEpisodeNameTextView, mEpisodeAirDateTextView, mEpisodeEpisodeTextView;
     private OnEpisodeClickedListener mOnEpisodeClickedListener;
 
     private EpisodesViewHolder(@NonNull View itemView, OnEpisodeClickedListener onEpisodeClickedListener) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        mEpisodeNameTextView = itemView.findViewById(R.id.episode_name_text_view);
+        mEpisodeAirDateTextView = itemView.findViewById(R.id.episode_air_date_text_view);
+        mEpisodeEpisodeTextView = itemView.findViewById(R.id.episode_episode_text_view);
         mOnEpisodeClickedListener = onEpisodeClickedListener;
     }
 
-    public static EpisodesViewHolder create(ViewGroup parent, OnEpisodeClickedListener onEpisodeClickedListener) {
+    public static EpisodesViewHolder create(ViewGroup parent,
+                                            OnEpisodeClickedListener onEpisodeClickedListener) {
         return new EpisodesViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.episodes_view_holder_layout, parent, false),
                 onEpisodeClickedListener);
     }
 
-    void bindItem(@Nullable Episode episode) {
+    void bindItem(@Nullable IEpisode episode) {
         if (episode != null) {
-            episodeNameTextView.setText(episode.getName());
-            episodeAirDateTextView.setText(episode.getAirDate());
-            episodeEpisodeTextView.setText(episode.getEpisode());
+            mEpisodeNameTextView.setText(episode.getName());
+            mEpisodeAirDateTextView.setText(String.format(itemView.getContext().getString(R.string.air_date),
+                    episode.getAirDate()));
+            mEpisodeEpisodeTextView.setText(episode.getEpisode());
             itemView.setOnClickListener(v -> mOnEpisodeClickedListener.onEpisodeClicked(episode));
         }
     }
